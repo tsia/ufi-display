@@ -55,7 +55,7 @@ EOF
 
 sed -i \
 -e 's/-idle [0-9]\+/-idle 0/g' \
--e 's/START_UNCLUTTER=.\+/START_UNCLUTTRER="true"/g' \
+-e 's/START_UNCLUTTER=.\+/START_UNCLUTTER="true"/g' \
 /etc/default/unclutter
 
 systemctl disable man-db.timer
