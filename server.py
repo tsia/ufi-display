@@ -8,6 +8,7 @@ from threading import Timer
 
 SCRIPTDIR = os.getcwd() + '/scripts'
 HBTIMEOUT = 30
+HBTIMER = None
 
 class Server(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -15,7 +16,7 @@ class Server(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path == '/heartbeat':
-            if HBTIMER:
+            if HBTIMER is not None:
                 HBTIMER.cancel()
             heartbeat()
             self._sendResponse(200, b'OK')
