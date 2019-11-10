@@ -56,7 +56,7 @@ def heartbeat():
 
 def run(server_class=HTTPServer, handler_class=Server, port=80):
     print('Running setup script')
-    if not os.path.isfile(SCRIPTDIR + 'setup.sh'):
+    if not os.path.isfile(SCRIPTDIR + '/setup.sh'):
         print('not found. skipping')
     else:
         args = [SCRIPTDIR + '/setup.sh']
