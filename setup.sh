@@ -1,6 +1,9 @@
 #!/bin/bash
 
-apt install xorg chromium-browser fonts-noto-color-emoji unclutter
+echo -n "Enter display name: "
+read displayname
+
+apt -y install xorg chromium-browser fonts-noto-color-emoji unclutter ddcutil
 
 adduser --system display
 
@@ -9,6 +12,8 @@ export STARTUP=/opt/ufi-display/startup.sh
 . /etc/X11/Xsession
 EOF
 chown display:nogroup /home/display/.xinitrc
+
+echo -n ${displayname} > /home/display/.displayname
 
 cat <<EOF > /etc/systemd/system/xinit.service
 [Unit]
