@@ -2,6 +2,7 @@
 
 echo -n "Enter display name: "
 read displayname
+echo -n ${displayname} > /home/display/.displayname
 
 apt -y install xorg chromium-browser fonts-noto-color-emoji unclutter ddcutil
 
@@ -13,7 +14,22 @@ export STARTUP=/opt/ufi-display/startup.sh
 EOF
 chown display:nogroup /home/display/.xinitrc
 
-echo -n ${displayname} > /home/display/.displayname
+cat <<EOF > /etc/systemd/system/ufi-display.service
+[Unit]
+Description=ufi display util service
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStartPre=/bin/bash -c '/bin/echo 0 > /sys/class/graphics/fbcon/cursor_blink'
+ExecStart=/usr/bin/python3 -u /opt/ufi-display/server.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=graphical.target
+EOF
+systemctl enable ufi-display.service
 
 cat <<EOF > /etc/systemd/system/xinit.service
 [Unit]
