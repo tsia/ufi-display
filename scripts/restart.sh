@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo "restart" >> /tmp/server.log
+systemctl restart xinit

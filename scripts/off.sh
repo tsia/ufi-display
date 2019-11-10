@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "off" >> /tmp/server.log
+/usr/bin/vcgencmd display_power 0
+

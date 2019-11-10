@@ -20,6 +20,11 @@ class Server(BaseHTTPRequestHandler):
             self._sendResponse(200, b'OK')
             return
 
+        if self.path == '/exit':
+            sys.exit()
+            self._sendResponse(200, b'OK')
+            return
+
         if not re.match(r"/[a-zA-Z0-9\._-]", self.path):
             self._sendResponse(400, b'Bad Request')
             return

@@ -21,8 +21,8 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStartPre=/bin/bash -c '/bin/echo 0 > /sys/class/graphics/fbcon/cursor_blink'
 ExecStart=/usr/bin/python3 -u /opt/ufi-display/server.py
+WorkingDirectory=/opt/ufi-display
 Restart=always
 RestartSec=5
 

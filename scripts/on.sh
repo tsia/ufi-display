@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "on" >> /tmp/server.log
+/usr/bin/vcgencmd display_power 1
+
