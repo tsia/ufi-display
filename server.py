@@ -15,7 +15,8 @@ class Server(BaseHTTPRequestHandler):
 
     def do_POST(self):
         if self.path == '/heartbeat':
-            HBTIMER.cancel()
+            if HBTIMER:
+                HBTIMER.cancel()
             heartbeat()
             self._sendResponse(200, b'OK')
             return
@@ -61,7 +62,6 @@ def run(server_class=HTTPServer, handler_class=Server, port=80):
         args = [SCRIPTDIR + '/setup.sh']
         Popen(args, cwd=SCRIPTDIR)
     print('Starting httpd on port %d...' % (port))
-    heartbeat()
     server_address = ('localhost', port)
     httpd = server_class(server_address, handler_class)
     httpd.serve_forever()
