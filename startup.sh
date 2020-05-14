@@ -6,7 +6,7 @@ HOMEPAGE=http://ufi.mom.net.wurstsalat.cloud/
 # get framebuffer size
 res=$(cat /sys/class/graphics/${FRAMEBUFFER:-fb0}/virtual_size | awk -F ',' '{ print $1 + 1 "," $2 + 1 }')
 
-displayname=$(cat /home/display/.displayname)
+displayname=$(cat /boot/displayname.txt)
 
 # cleanup and prepare temp folders to prevent chromium from complaining
 rm -rf /tmp/chromium

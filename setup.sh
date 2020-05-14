@@ -2,7 +2,7 @@
 
 echo -n "Enter display name: "
 read displayname
-echo -n ${displayname} > /home/display/.displayname
+echo -n ${displayname} > /boot/displayname.txt
 
 apt -y install xorg chromium-browser fonts-noto-color-emoji unclutter ddcutil
 
@@ -69,4 +69,4 @@ sed -i \
 -e 's/ fastboot / /g' \
 -e 's/ noswap / /g' \
 -e 's/rootwait/quiet logo.nologo vt.global_cursor_default=0 consoleblank=0 fastboot noswap rootwait/g' \
-/boot/cmdline.txt 
+/boot/cmdline.txt
