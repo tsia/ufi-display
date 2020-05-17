@@ -1,0 +1,153 @@
+---
+- name: UFI Display
+  hosts: all
+  tasks:
+    - name: set display name
+      copy:
+        content: "{{ displayname }}"
+        dest: /boot/displayname.txt
+      when: displayname is defined
+    - name: install packages
+      package:
+        name:
+          - xorg
+          - chromium-browser
+          - fonts-noto-color-emoji
+          - unclutter
+          - ddcutil
+          - git
+        state: present
+    - name: create user
+      user:
+        name: display
+        home: /home/display
+        createhome: yes
+        state: present
+    - name: create xinitrc
+      copy:
+        src: xinitrc
+        dest: /home/display/.xinitrc
+        owner: display
+        group: nogroup
+    - name: create systemd units
+      copy:
+        src: "{{ item }}.service"
+        dest: /etc/systemd/system/{{ item }}.service
+      loop:
+        - ufi-display
+        - xinit
+    - name: enable services
+      systemd:
+        name: "{{ item }}.service"
+        state: stopped
+        enabled: yes
+      loop:
+        - ufi-display
+        - xinit
+    - name: configure screen blanking
+      copy:
+        src: 98x11-screen_blank
+        dest: /etc/X11/Xsession.d/
+    - name: configure unclutter
+      replace:
+        path: /etc/default/unclutter
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.replace }}"
+      loop:
+        - regexp: -idle [0-9]+
+          replace: -idle 0
+        - regexp: START_UNCLUTTER=.*
+          replace: START_UNCLUTTER="true"
+      loop_control:
+        label: "{{ item.replace }}"
+    - name: disable services
+      systemd:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      loop:
+        - man-db.timer
+        - wpa_supplicant
+        - avahi-daemon
+        - alsa-state
+    - name: configure X11
+      replace:
+        path: /etc/X11/Xwrapper.config
+        regexp: allowed_users\s?=.*
+        replace: allowed_users=anybody
+      tags:
+        - Xwarpper
+    - name: configure kernel
+      replace:
+        path: /boot/cmdline.txt
+        regexp: "{{ item.regexp }}"
+        replace: "{{ item.replace }}"
+      loop:
+        - regexp: fsck\.repair=yes
+          replace: fsck.repair=no
+        - regexp: " quiet "
+          replace: " "
+        - regexp: " logo.nologo "
+          replace: " "
+        - regexp: " vt\\.global_cursor_default=. "
+          replace: " "
+        - regexp: " consoleblank=. "
+          replace: " "
+        - regexp: " fastboot "
+          replace: " "
+        - regexp: " noswap "
+          replace: " "
+        - regexp: "rootwait"
+          replace: quiet logo.nologo vt.global_cursor_default=0 consoleblank=0 fastboot noswap rootwait
+    # - name: configure fstab
+    #   mount:
+    #     path: "{{ item.path }}"
+    #     src: "{{ item.src }}"
+    #     fstype: "{{ item.fstype }}"
+    #     opts: "{{ item.opts }}"
+    #     state: present
+    #   loop:
+    #     - path: /boot
+    #       src: /dev/mmcblk0p1
+    #       fstype: vfat
+    #       opts: defaults,ro,noatime
+    #     - path: /
+    #       src: /dev/mmcblk0p2
+    #       fstype: ext4
+    #       opts: defaults,ro,noatime
+    #     - path: /tmp
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #     - path: /run
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #     - path: /var/spool
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #     - path: /var/log
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #     - path: /var/tmp
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #     - path: /var/lock
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #     - path: /var/lib/dhcp
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #     - path: /var/lib/dhcpcd5
+    #       src: tmpfs
+    #       fstype: tmpfs
+    #       opts: rw,nosuid,nodev,mode=755
+    #   loop_control:
+    #     label: "{{ item.path }}"
+    # - name: reboot
+    #   reboot:

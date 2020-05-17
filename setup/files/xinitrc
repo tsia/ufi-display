@@ -1,0 +1,2 @@
+export STARTUP=/opt/ufi-display/startup.sh
+. /etc/X11/Xsession
